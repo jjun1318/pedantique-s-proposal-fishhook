@@ -595,16 +595,16 @@ function transitionTo(id, pushToHistory = true) {
 window.addEventListener('popstate', (event) => {
   const state = event.state;
   if (state && state.id) {
-    // Just like a normal transition, but don't pushState again
     lastSecretChoice = state.lastSecretChoice || null;
     usedSecretChoices = new Set(state.usedSecretChoices || []);
     showPassage(state.id);
     restoreSecretButtons();
     updateButtons();
     updateSecretLinkLabel();
-    window.scrollTo({ top: 0 });
+    window.scrollTo({ top: 0, behavior: 'auto' });
   }
 });
+
 
 
   updateButtons();
