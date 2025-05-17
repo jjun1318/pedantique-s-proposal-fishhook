@@ -7,8 +7,9 @@
   <style>
     body {
       background-color: black;
-      max-width: 750px;       /* Keeps text column narrow */
+      max-width: 750px;
       width: 90%;
+
       margin: 0 auto;         /* Centers horizontally */
       padding: 50px 20px;    /* Adds top/bottom space and small side padding */
       color: white;
@@ -24,7 +25,8 @@
     .fade-in {
        animation: fadeIn 0.5s ease;
     }
-    @media (max-width: 600px) {
+
+@media (max-width: 600px) {
   #controls {
     top: 10px;
     left: 10px;
@@ -37,6 +39,7 @@
     height: 30px;
   }
 }
+
 
     @keyframes fadeIn {
       from { opacity: 0; }
@@ -447,30 +450,42 @@ function showPassage(id) {
     });
   }
 
-  function transitionTo(id) {
-    showPassage(id);
-    updateButtons();
-    updateSecretLinkLabel();
+function transitionTo(id, pushToHistory = true) {
+  showPassage(id);
+  updateButtons();
+  updateSecretLinkLabel();
 
-    if (id === '기밀1') {
-      if (lastSecretChoice) {
-        usedSecretChoices.add(lastSecretChoice);
-        const button = document.getElementById(`choice${lastSecretChoice}`);
-        if (button) button.classList.add('disabled');
-        lastSecretChoice = null;
-      } else {
-        restoreSecretButtons();
-      }
-
-      if (usedSecretChoices.size === 3) {
-        goTo('기밀2');
-        return;
-      }
+  if (id === '기밀1') {
+    if (lastSecretChoice) {
+      usedSecretChoices.add(lastSecretChoice);
+      const button = document.getElementById(`choice${lastSecretChoice}`);
+      if (button) button.classList.add('disabled');
+      lastSecretChoice = null;
+    } else {
+      restoreSecretButtons();
     }
+
+    if (usedSecretChoices.size === 3) {
+      goTo('기밀2');
+      return;
+    }
+  }
+
+  if (pushToHistory) {
+    history.pushState({
+      id,
+      lastSecretChoice,
+      usedSecretChoices: Array.from(usedSecretChoices)
+    }, '');  // optional: puts #room-name in URL bar
+  }
+
+  window.scrollTo({ top: 0 });
+}
+
 
 
     window.scrollTo({ top: 0 });
-  }
+  
 
   function goTo(id) {
     const current = document.querySelector('.passage.active');
@@ -483,7 +498,7 @@ function showPassage(id) {
     }
 
     futureStack.length = 0;
-    transitionTo(id);
+    transitionTo(id, true);
 
     // Track paths for 방4 and 방5 logic
     if (['조사1', '연락1', '이미1'].includes(id)) choiceIn4 = id;
@@ -526,7 +541,8 @@ function showPassage(id) {
 
     futureStack.length = 0;
     lastSecretChoice = choice;
-    transitionTo(id);
+    transitionTo(id, true);
+
   }
 
   function undo() {
@@ -575,7 +591,34 @@ function showPassage(id) {
     window.scrollTo({ top: 0 });
   }
 
+// Handle browser back/forward button navigation
+window.addEventListener('popstate', (event) => {
+  const state = event.state;
+  if (state && state.id) {
+    // Just like a normal transition, but don't pushState again
+    lastSecretChoice = state.lastSecretChoice || null;
+    usedSecretChoices = new Set(state.usedSecretChoices || []);
+    showPassage(state.id);
+    restoreSecretButtons();
+    updateButtons();
+    updateSecretLinkLabel();
+    window.scrollTo({ top: 0 });
+  }
+});
+
+
   updateButtons();
+
+// Push the initial state when the page first loads
+const firstPassage = document.querySelector('.passage.active');
+if (firstPassage) {
+  history.replaceState({
+    id: firstPassage.id,
+    lastSecretChoice: null,
+    usedSecretChoices: []
+  }, '');
+}
+
 </script>
 
 
