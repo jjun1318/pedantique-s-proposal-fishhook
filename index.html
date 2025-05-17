@@ -26,21 +26,6 @@
        animation: fadeIn 0.5s ease;
     }
 
-    @media (max-width: 600px) {
-      #controls {
-        top: 10px;
-        left: 10px;
-        flex-direction: row; /* horizontal layout works better in top-left */
-        gap: 8px;
-      }
-
-      .icon-button svg {
-        width: 30px;
-        height: 30px;
-      }
-    }
-
-
     @keyframes fadeIn {
       from { opacity: 0; }
       to   { opacity: 1; }
@@ -86,6 +71,21 @@
       color: white;
       pointer-events: none;
     }
+
+    @media (max-width: 600px) {
+      #controls {
+        top: 10px;
+        left: 10px;
+        flex-direction: row;
+        gap: 8px;
+      }
+
+      .icon-button svg {
+        width: 30px;
+        height: 30px;
+      }
+    }
+
   </style>
 </head>
 <body>
