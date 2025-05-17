@@ -601,9 +601,14 @@ window.addEventListener('popstate', (event) => {
     restoreSecretButtons();
     updateButtons();
     updateSecretLinkLabel();
-    window.scrollTo({ top: 0, behavior: 'auto' });
+
+    // Fix: delay scrollTo to override browser's automatic scroll restore
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'auto' });
+    }, 0);
   }
 });
+
 
 
 
